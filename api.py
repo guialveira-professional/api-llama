@@ -9,7 +9,9 @@ app = Flask(__name__)
 embedding_model = OllamaEmbedding(model_name="llama3")
 
 @app.route('/embedding', methods=['POST'])
-def get_response(prompt):
+def get_response():
+
+    body = request.get_json()['prompt']
     parser = PDFReader()
     file_extractor = {".pdf": parser}
     documents = SimpleDirectoryReader(
@@ -30,9 +32,9 @@ def get_response(prompt):
     )
 
     query_engine = index.as_query_engine()
-    response = query_engine.query(str(prompt))
+    response = query_engine.query(str(body))
 
-    return response.response
+    return jsonify({'msg':response.response})
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=11434)
+    app.run(debub=True)
